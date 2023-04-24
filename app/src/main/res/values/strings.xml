@@ -1,0 +1,36 @@
+<resources>
+    <string name="app_name">experimentation</string>
+    <string name="what_are_you_looking_for">What are you looking for?</string>
+    <string name="trade_by_data">Trade by</string>
+    <string name="bata">bata</string>
+    <string name="location">Location</string>
+    <string name="Phones">Phones</string>
+    <string name="Kids">Kids</string>
+    <string name="Headphones">Headphones</string>
+    <string name="Cars">Cars</string>
+    <string name="Furniture">Furniture</string>
+    <string name="Games">Games</string>
+    <string name="latest">Latest</string>
+    <string name="view_all">View all</string>
+    <string name="flash_sale">Flash Sale</string>
+</resources>
+
+
+
+
+<!--<resources xmlns:tools="http://schemas.android.com/tools">-->
+<!--    <string name="app_name" tools:ignore="MissingTranslation">data</string>-->
+<!--    <string name="data_monthly_subscription" tools:ignore="MissingTranslation">На месяц</string>-->
+<!--    <string name="data_annually_subscription" tools:ignore="MissingTranslation">На год</string>-->
+<!--    <string name="data_email_or_pass_incorrect" tools:ignore="MissingTranslation">Email или пароль введены неверно</string>-->
+<!--    <string name="data_user_not_verified" tools:ignore="MissingTranslation">Вы не подтвердили свою регистрацию</string>-->
+<!--    <string name="data_network_error" tools:ignore="MissingTranslation">Ошибка сети</string>-->
+<!--    <string name="data_no_internet" tools:ignore="MissingTranslation">Отсутствует интернет-соединение</string>-->
+<!--    <string name="data_user_blocked" tools:ignore="MissingTranslation">Пользователь заблокирован</string>-->
+<!--    <string name="data_user_already_exists" tools:ignore="MissingTranslation">Пользователь с данным email уже существует</string>-->
+<!--    <string name="data_authorization_required" tools:ignore="MissingTranslation">Необходима авторизация</string>-->
+<!--    <string name="data_unknown_exception" tools:ignore="MissingTranslation">Неизвестная ошибка</string>-->
+<!--    <string name="data_wrong_password" tools:ignore="MissingTranslation">Неверный пароль</string>-->
+<!--    <string name="data_premium_required" tools:ignore="MissingTranslation">Для использования данного функционала необходима подписка</string>-->
+<!--    <string name="data_common_error_title" tools:ignore="MissingTranslation">Ошибка</string>-->
+<!--</resources>-->
