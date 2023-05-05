@@ -1,6 +1,6 @@
 package com.example.experimentation.EditProfile
 
-import android.app.Application
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.os.Build
 import android.os.Bundle
@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.DatePicker
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -31,16 +30,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.example.experimentation.AuthScreen.*
 import com.example.experimentation.R
+import com.example.experimentation.room.UsersDb
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -49,6 +50,7 @@ import java.time.format.DateTimeFormatter
 class EditProfileFragment : Fragment() {
     private val viewModel: EditProfileViewModel by viewModels()
 
+    @SuppressLint("CoroutineCreationDuringComposition")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -60,8 +62,6 @@ class EditProfileFragment : Fragment() {
             UiBinding(viewModel = viewModel)
         }
     }
-
-
 }
 
 @Composable
@@ -74,9 +74,8 @@ private fun UiBinding(viewModel: EditProfileViewModel) {
         ) {
             AppBar(viewModel)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                EditInstruments()
+                EditInstruments(viewModel)
             }
-            Button(viewModel)
         }
     }
 }
@@ -150,7 +149,9 @@ private fun CardView() {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun EditInstruments() {
+fun EditInstruments(viewModel:EditProfileViewModel) {
+    viewModel.pref?.let { viewModel.takeProfile(it) }
+    val profile by viewModel.userData.collectAsState()
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -162,7 +163,13 @@ fun EditInstruments() {
             onValueChange = { newValue ->
                 textState = newValue.capitalizeFirstLetter()
             },
-            label = { Text(text = "Имя") },
+            label = {
+                if (profile!= null) {
+                    Text(text = profile!!.name)
+                } else{
+                    Text(text = "Name")
+                }
+            },
             singleLine = true,
             maxLines = 1,
             textStyle = MaterialTheme.typography.body1.copy(
@@ -187,7 +194,12 @@ fun EditInstruments() {
         OutlinedTextField(
             value = selectedGender,
             onValueChange = { selectedGender = it },
-            label = { Text(text = "Пол") },
+            label = {
+                if (profile != null) {
+                    profile!!.gender?.let { Text(text = it) }
+            } else{
+                Text(text = "Gender")
+            }  },
             textStyle = MaterialTheme.typography.body1.copy(
                 color = MaterialTheme.colors.onSurface
             ),
@@ -246,7 +258,7 @@ fun EditInstruments() {
         OutlinedTextField(
             value = selectedDate.value.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
             onValueChange = { },
-            label = { Text(text = "Дата рождения") },
+            label = { profile?.date?.let { Text(text = it) } },
             singleLine = true,
             maxLines = 1,
             textStyle = MaterialTheme.typography.body1.copy(
@@ -281,18 +293,27 @@ fun EditInstruments() {
                 .fillMaxWidth(),
             enabled = false
         )
+       val model = UsersDb(
+            name = textState,
+            date = selectedDate.toString(),
+            gender = selectedGender,
+           uuid = "main"
+        )
+        Button(viewModel, model)
     }
+
 }
 
 
 @Composable
-fun Button(viewModel: EditProfileViewModel) {
+fun Button(viewModel: EditProfileViewModel, model: UsersDb) {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.BottomEnd
     ) {
         Button(
             onClick = {
+                viewModel.registration(model)
                 viewModel.routeToProfile()
             },
             modifier = Modifier

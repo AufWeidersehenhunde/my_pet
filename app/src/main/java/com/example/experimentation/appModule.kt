@@ -2,6 +2,7 @@ package com.example.experimentation
 
 import android.app.Activity
 import android.app.Application
+import android.content.Context
 import android.net.Uri
 import androidx.activity.result.ActivityResultRegistry
 import androidx.fragment.app.Fragment
@@ -13,6 +14,10 @@ import com.example.experimentation.AuthScreen.ProfileViewModel
 import com.example.experimentation.EditProfile.EditProfileViewModel
 import com.example.experimentation.HomeFragment.HomeViewModel
 import com.example.experimentation.MainActivity.MainActivityViewModel
+import com.example.experimentation.room.DBprovider
+import com.example.experimentation.room.DaoUser
+import com.example.experimentation.room.Preference
+import com.example.experimentation.room.RepositoryUser
 import com.github.terrakok.cicerone.Cicerone
 import com.github.terrakok.cicerone.NavigatorHolder
 import com.github.terrakok.cicerone.Router
@@ -21,6 +26,7 @@ import com.github.terrakok.cicerone.androidx.FragmentScreen
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -58,6 +64,25 @@ AppModule {
     @Provides
     fun provideNotificationService(): NotificationService = NotificationService()
 
+    @Singleton
+    @Provides
+    fun providePreference(context:Context): Preference = Preference(context)
+
+    @Provides
+    @Singleton
+    fun provideContext(application: Application): Context {
+        return application.applicationContext
+    }
+
+    @Provides
+    @Singleton
+    fun provideDatabase(@ApplicationContext context: Context): DBprovider {
+        return Room.databaseBuilder(
+            context,
+            DBprovider::class.java,
+            "mydatabase"
+        ).build()
+    }
 
     @Singleton
     @Provides
@@ -72,8 +97,10 @@ AppModule {
     @Provides
     fun provideEditProfileViewModel(
         router: Router,
-        context: Application
-    ): EditProfileViewModel = EditProfileViewModel(router, context)
+        context: Application,
+        repositoryUser: RepositoryUser,
+        preference: Preference
+    ): EditProfileViewModel = EditProfileViewModel(router, context, repositoryUser, preference )
 
     @Singleton
     @Provides
@@ -81,12 +108,23 @@ AppModule {
         router: Router,
         repositoryAPI: RepositoryAPI,
         context: Application,
-
+        repositoryUser: RepositoryUser,
+        preference: Preference
     ): ProfileViewModel =
-        ProfileViewModel(router, repositoryAPI, context, )
+        ProfileViewModel(router, repositoryAPI, context, repositoryUser, preference )
 
     @Singleton
     @Provides
     fun provideMainActivityViewModel(router: Router): MainActivityViewModel =
         MainActivityViewModel(router)
+
+    @Singleton
+    @Provides
+    fun provideDaoUser(dbProvider: DBprovider): DaoUser = dbProvider.DaoUser()
+
+
+    @Singleton
+    @Provides
+    fun provideRepositoryUser(user: DaoUser): RepositoryUser = RepositoryUser(user)
+
 }

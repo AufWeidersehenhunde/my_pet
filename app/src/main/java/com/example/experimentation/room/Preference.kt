@@ -1,9 +1,11 @@
-package com.example.experimentation
+package com.example.experimentation.room
 
 import android.content.Context
 import android.content.SharedPreferences
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 
-class Preference(context: Context){
+class Preference @Inject constructor(@ApplicationContext context: Context) {
 
     private val PREFS_NAME = "pref"
     val sharedPref: SharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)

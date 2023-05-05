@@ -29,6 +29,7 @@ import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -96,7 +97,7 @@ class ProfileFragment() : Fragment() {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         AppBar(viewModel)
-                        CardView()
+                        CardView(viewModel)
                         list?.let { MyRecyclerView(items = it) }
                         MyButton(viewModel.ctn)
                     }
@@ -146,7 +147,8 @@ class ProfileFragment() : Fragment() {
     }
 
     @Composable
-    private fun CardView() {
+    private fun CardView(viewModel: ProfileViewModel) {
+        val profile by viewModel.userData.collectAsState()
         Card(
             modifier = Modifier
                 .fillMaxWidth(),
@@ -174,11 +176,19 @@ class ProfileFragment() : Fragment() {
                         Icon(painter = painterResource(id = R.drawable.ic_search), contentDescription = null, Modifier.clickable { } )
                     }
                     Spacer(modifier = Modifier.height(6.dp))
-                    Text(
-                        text = "Имя",
-                        style = MaterialTheme.typography.h5,
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
-                    )
+                    if (profile!=null){
+                        Text(
+                            text = profile!!.name,
+                            style = MaterialTheme.typography.h5,
+                            modifier = Modifier.align(Alignment.CenterHorizontally)
+                        )
+                    } else {
+                        Text(
+                            text = "Имя",
+                            style = MaterialTheme.typography.h5,
+                            modifier = Modifier.align(Alignment.CenterHorizontally)
+                        )
+                    }
             }
         }
     }
